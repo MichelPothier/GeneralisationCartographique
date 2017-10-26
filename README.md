@@ -1,2 +1,3 @@
 # GeneralisationCartographique
-Répertoire contenant les outils de généralisation cartographique. / Directory containing cartographic generalization tools.
+Outils de généralisation cartographique. / Cartographic generalization tools.
+(ArcGis 10.5 / ArcMap / Add-in / Vb.Net)
