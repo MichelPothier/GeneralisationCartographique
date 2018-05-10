@@ -5579,9 +5579,11 @@ Module modGeneralisation
         Dim pPolylineErrTmp As IPolyline = Nothing          'Interface contenant la polyligne d'erreur de généralisation temporaire.
         Dim pPolylineErr As IPolyline = Nothing             'Interface contenant la polyligne d'erreur de généralisation.
         Dim pSquelette As IPolyline = Nothing               'Interface contenant le squelette.
+        Dim pSqueletteEnv As IPolyline = Nothing            'Interface contenant le squelette avec son enveloppe.
         Dim pSqueletteTmp As IPolyline = Nothing            'Interface contenant le squelette temporaire.
         Dim pBagDroitesTmp As IGeometryBag = Nothing        'Interface contenant les droites de Delaunay temporaire.
         Dim pBagDroites As IGeometryBag = Nothing           'Interface contenant les droites de Delaunay.
+        Dim pBagDroitesEnv As IGeometryBag = Nothing        'Interface contenant les droites de Delaunay avec son enveloppe.
         Dim pGeomColl As IGeometryCollection = Nothing      'Interface pour extraire les lignes en erreurs.
         Dim pPointsConnexion As IMultipoint = Nothing       'Interface contenant les points de connexion.
         Dim pTopoOp As ITopologicalOperator2 = Nothing      'Interface pour simplifier une géométrie.
@@ -5603,7 +5605,16 @@ Module modGeneralisation
 
                     'Généraliser la polyligne à droite
                     Call clsGeneraliserGeometrie.GeneraliserPolyligne(pPolyline, pPointsConnexion, dDistLat, dLargGenMin, dLongGenMin, dLongMin,
-                                                                      pPolylineGen, pPolylineErr, pSquelette, pBagDroites)
+                                                                      pPolylineGen, pPolylineErr, pSquelette, pSqueletteEnv, pBagDroites, pBagDroitesEnv)
+
+                    'Si le résultat de la ligne généralisée est vide
+                    If pPolylineGen.IsEmpty Then
+                        'Inverser le sens de numérisation
+                        pPolyline.ReverseOrientation()
+                        'Généraliser la polyligne à droite
+                        Call clsGeneraliserGeometrie.GeneraliserPolyligne(pPolyline, pPointsConnexion, dDistLat, dLargGenMin, dLongGenMin, dLongMin,
+                                                                          pPolylineGen, pPolylineErr, pSquelette, pSqueletteEnv, pBagDroites, pBagDroitesEnv)
+                    End If
 
                     'Définir la ligne pour généraliser dans l'autre sens
                     pPolylineGen.ReverseOrientation()
@@ -5611,33 +5622,12 @@ Module modGeneralisation
 
                     'Généraliser la polyligne à gauche
                     Call clsGeneraliserGeometrie.GeneraliserPolyligne(pPolyline, pPointsConnexion, dDistLat, dLargGenMin, dLongGenMin, dLongMin,
-                                                                      pPolylineGen, pPolylineErrTmp, pSqueletteTmp, pBagDroitesTmp)
+                                                                      pPolylineGen, pPolylineErrTmp, pSqueletteTmp, pSqueletteEnv, pBagDroitesTmp, pBagDroitesEnv)
 
                     'Interface pour ajouter les erreurs de généralisation
                     pGeomColl = CType(pPolylineErr, IGeometryCollection)
                     'Ajouter les erreurs de généralisation
                     pGeomColl.AddGeometryCollection(CType(pPolylineErrTmp, IGeometryCollection))
-
-                    'Interface pour extraire le nombre de composantes
-                    pGeomColl = CType(pPolylineGen, IGeometryCollection)
-                    'Vérifier si plus d'une géométrie est présente dans le résultat
-                    If pGeomColl.GeometryCount > 1 Then
-                        'Définir la ligne pour généraliser dans l'autre sens
-                        pPolylineGen.ReverseOrientation()
-                        pPolyline = pPolylineGen
-
-                        'Généraliser la polyligne à droite
-                        Call clsGeneraliserGeometrie.GeneraliserPolyligne(pPolyline, pPointsConnexion, dDistLat, dLargGenMin, dLongGenMin, dLongMin,
-                                                                          pPolylineGen, pPolylineErrTmp, pSqueletteTmp, pBagDroitesTmp)
-
-                        'Définir la ligne pour généraliser dans l'autre sens
-                        pPolylineGen.ReverseOrientation()
-                        pPolyline = pPolylineGen
-
-                        'Généraliser la polyligne à gauche
-                        Call clsGeneraliserGeometrie.GeneraliserPolyligne(pPolyline, pPointsConnexion, dDistLat, dLargGenMin, dLongGenMin, dLongMin,
-                                                                          pPolylineGen, pPolylineErrTmp, pSqueletteTmp, pBagDroitesTmp)
-                    End If
 
                     'Vérifier si une erreur de généralisation est présente
                     If bCorriger And Not pPolylineErr.IsEmpty Then

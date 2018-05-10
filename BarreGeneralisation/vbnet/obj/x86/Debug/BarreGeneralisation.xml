@@ -6,36 +6,16 @@ BarreGeneralisation
 </name>
 </assembly>
 <members>
-<member name="T:BarreGeneralisation.cmdCorrigerSuperficieSurface">
+<member name="T:BarreGeneralisation.cmdCorrigerLongueurDroite">
 	<summary>
- Commande qui permet de corriger la superficie des surfaces des éléments sélectionnés selon une superficie minimale.
+ Commande qui permet de corriger la longueur des droites des éléments sélectionnés selon une longueur 
+ à l'aide des outils de topologie tout en conservant la connexion entre les éléments.
 </summary>
 	<remarks>
 Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être utilisé dans ArcMap (ArcGisESRI).
 
 Auteur : Michel Pothier
-Date : 18 juillet 2017
-</remarks>
-</member><member name="T:BarreGeneralisation.cmdCorrigerSegmentationEnTrop">
-	<summary>
- Commande qui permet de corriger la segmentation en trop des éléments sélectionnés selon les éléments en relation à l'aide des outils de topologie.
-</summary>
-	<remarks>
-Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être utilisé dans ArcMap (ArcGisESRI).
-
-Auteur : Michel Pothier
-Date : 18 juillet 2017
-</remarks>
-</member><member name="T:BarreGeneralisation.cmdCorrigerDupplicationLigne">
-	<summary>
- Commande qui permet de corriger la dupplication des lignes pour les éléments sélectionnés de type ligne
- à l'aide des outils de topologie tout en respectant les éléments en relation.
-</summary>
-	<remarks>
-Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être utilisé dans ArcMap (ArcGisESRI).
-
-Auteur : Michel Pothier
-Date : 05 septembre 2017
+Date : 21 juin 2017
 </remarks>
 </member><member name="M:BarreGeneralisation.clsGeneraliserGeometrie.GeneraliserInterieurPolygone(ESRI.ArcGIS.Geometry.IPolygon4,ESRI.ArcGIS.Geometry.IMultipoint,System.Double,System.Double,System.Double,System.Double,ESRI.ArcGIS.Geometry.IPolygon@,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IGeometryBag@)">
 	<summary>
@@ -67,7 +47,7 @@ Date : 05 septembre 2017
 	<param name="pSquelette"> Interface contenant le squelette du polygon.</param>
 	<param name="pBagDroites"> Interface contenant les droites de Delaunay.</param>
 	<remarks>La généralisation est effectuée à partir des lignes des triangles de Delaunay.</remarks>
-</member><member name="M:BarreGeneralisation.clsGeneraliserGeometrie.GeneraliserPolyligne(ESRI.ArcGIS.Geometry.IPolyline,ESRI.ArcGIS.Geometry.IMultipoint,System.Double,System.Double,System.Double,System.Double,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IGeometryBag@)">
+</member><member name="M:BarreGeneralisation.clsGeneraliserGeometrie.GeneraliserPolyligne(ESRI.ArcGIS.Geometry.IPolyline,ESRI.ArcGIS.Geometry.IMultipoint,System.Double,System.Double,System.Double,System.Double,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IGeometryBag@,ESRI.ArcGIS.Geometry.IGeometryBag@)">
 	<summary>
  Routine qui permet de retourner la Polyligne de généralisation et la Polyline d'erreurs du résultat de la généralisation effectuée pour une polyligne.
  La généralisation est effectuée à partir des lignes des triangles de Delaunay.
@@ -81,7 +61,26 @@ Date : 05 septembre 2017
 	<param name="pPolylineGen"> Interface contenant les lignes de généralisation.</param>
 	<param name="pPolylineErr"> Interface contenant les lignes de généralisation en erreur.</param>
 	<param name="pSquelette"> Interface contenant le squelette de la polyligne.</param>
-	<param name="pBagDroites"> Interface contenant les droites des triangles de Delaunay utilisées pour effectuer la généralisation.</param>
+	<param name="pSqueletteEnv"> Interface contenant le squelette de la polyligne avec son enveloppe.</param>
+	<param name="pBagDroites"> Interface contenant les droites des triangles de Delaunay.</param>
+	<param name="pBagDroitesEnv"> Interface contenant les droites des triangles de Delaunay avec son enveloppe.</param>
+</member><member name="M:BarreGeneralisation.clsGeneraliserGeometrie.GeneraliserLigne(ESRI.ArcGIS.Geometry.IPolyline,ESRI.ArcGIS.Geometry.IMultipoint,System.Double,System.Double,System.Double,System.Double,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IGeometryBag@,ESRI.ArcGIS.Geometry.IGeometryBag@)">
+	<summary>
+ Routine qui permet de retourner la Polyligne de généralisation et la Polyline d'erreurs du résultat de la généralisation effectuée pour une polyligne.
+ La généralisation est effectuée à partir des lignes des triangles de Delaunay.
+ </summary>
+	<param name="pPolyline"> Polyligne utilisée pour effectuer la généralisation.</param>
+	<param name="pPointsConnexion">Interface contenant les points de connexion entre la polyligne et les éléments en relation.</param>
+	<param name="dDistLat"> Distance latérale utilisée pour éliminer des sommets en trop.</param>
+	<param name="dLargGenMin"> Largeur minimum utilisée pour généraliser.</param>
+	<param name="dLongGenMin"> Longueur minimale utilisée pour généraliser.</param>
+	<param name="dLongMin"> Longueur minimale d'une ligne.</param>
+	<param name="pPolylineGen"> Interface contenant les lignes de généralisation.</param>
+	<param name="pPolylineErr"> Interface contenant les lignes de généralisation en erreur.</param>
+	<param name="pSquelette"> Interface contenant le squelette de la polyligne.</param>
+	<param name="pSqueletteEnv"> Interface contenant le squelette de la polyligne avec son enveloppe.</param>
+	<param name="pBagDroites"> Interface contenant les droites des triangles de Delaunay.</param>
+	<param name="pBagDroitesEnv"> Interface contenant les droites des triangles de Delaunay avec son enveloppe.</param>
 </member><member name="M:BarreGeneralisation.clsGeneraliserGeometrie.TraiterLongueurLigneMinimale(ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IMultipoint,System.Double)">
 	<summary>
  Routine qui permet de détruire les lignes non-connectées qui sont inférieures à la longueur minimale d'une ligne
@@ -89,6 +88,12 @@ Date : 05 septembre 2017
 	<param name="pPolyline">Interface contenant la polyligne à traiter.</param>
 	<param name="pPointsConnexion">Interface contenant les points de connexion.</param>
 	<param name="dLongMin">Contient la longueur minimale d'une ligne.</param>
+</member><member name="M:BarreGeneralisation.clsGeneraliserGeometrie.ConnecterLignesPolygone(ESRI.ArcGIS.Geometry.IPolyline,ESRI.ArcGIS.Geometry.IPolygon@)">
+	<summary>
+ Routine qui permet d'ajouter les sommets de connexion des lignes des triangles de Delaunay au polygone.
+ </summary>
+	<param name="pLignesInt">Interface contenant les lignes intérieures des triangles de Delaunay.</param>
+	<param name="pPolygon">Polygone utilisée pour effectuer la généralisation d'un anneau intérieur.</param>
 </member><member name="M:BarreGeneralisation.clsGeneraliserGeometrie.GeneraliserAnneauInterieur(ESRI.ArcGIS.Geometry.IPolygon,ESRI.ArcGIS.Geometry.IMultipoint,System.Double,System.Double,System.Double,ESRI.ArcGIS.Geometry.IPolygon@,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IGeometryBag@)">
 	<summary>
  Routine qui permet de retourner le Polygone de généralisation intérieure et la Polyline d'erreur généralisation d'un anneau.
@@ -124,6 +129,24 @@ Date : 05 septembre 2017
 	<param name="dLargMin">Contient la largeur de généralisation minimum.</param>
 	<param name="dLongMin">Contient la longueur de généralisation minimum.</param>
 	<param name="pPolylineErr">Interface contenant la polyligne d'erreur de généralisation.</param>
+</member><member name="M:BarreGeneralisation.clsGeneraliserGeometrie.CreerPolyligneErreurGeneralisation(ESRI.ArcGIS.Geometry.IPolyline,ESRI.ArcGIS.Geometry.IPolyline,ESRI.ArcGIS.Geometry.IGeometryBag,System.Double,System.Double,ESRI.ArcGIS.Geometry.IPolyline@)">
+	<summary>
+ Function qui permet de créer la polyligne d'erreur de généralisation d'une géométrie.
+ </summary>
+	<param name="pPolyline">Interface contenant la polyligne à généraliser.</param>
+	<param name="pSquelette">Interface contenant le squelette de la géométrie.</param>
+	<param name="pBagLignesTriangles">Interface contenant les lignes des triangles.</param>
+	<param name="dLargMin">Contient la largeur de généralisation minimum.</param>
+	<param name="dLongMin">Contient la longueur de généralisation minimum.</param>
+	<param name="pPolylineErr">Interface contenant la polyligne d'erreur de généralisation.</param>
+</member><member name="M:BarreGeneralisation.clsGeneraliserGeometrie.RegrouperReseauxPolyligne(ESRI.ArcGIS.Geometry.IPolyline,System.Double)">
+	<summary>
+ Function qui permet de regrouper dans un BAG les réseaux d'un ensemble de lignes qui sont plus grand qu'une longueur minimale.
+ </summary>
+	<remarks>Un réseau est un ensemble de lignes qui se touchent entre elles.</remarks>
+	<param name="pPolyline">Interface contenant un ou plusieurs réseaux linéaires.</param>
+	<param name="dLongMin">Contient la longueur de minimale d'un réseau.</param>
+	<returns>GeometryBag contenant tous les réseaux linéaires plus grand que la longueur minimale</returns>
 </member><member name="M:BarreGeneralisation.clsGeneraliserGeometrie.CreerPolyligneGeneralisation(ESRI.ArcGIS.Geometry.IPolyline,System.Collections.Generic.Dictionary{System.Int32,BarreGeneralisation.TriangulationDelaunay.Noeud},ESRI.ArcGIS.Geometry.IGeometryBag,ESRI.ArcGIS.Geometry.IPolyline,ESRI.ArcGIS.Geometry.IPolyline@)">
 	<summary>
  Routine qui permet de créer et retourner la polyligne de généralisation.
@@ -132,6 +155,21 @@ Date : 05 septembre 2017
 	<param name="pDictLiens">Dictionnaire contenant l'information des sommets de la ligne à traiter.</param>
 	<param name="pBagDroites">Interface contenant les droites de Delaunay.</param>
 	<param name="pPolylineErr">Interface contenant la polyligne d'erreurs de généralisation.</param>
+	<param name="pPolylineGen">Interface contenant la polyligne de généralisation.</param>
+</member><member name="M:BarreGeneralisation.clsGeneraliserGeometrie.EliminerTrianglePolyligne(ESRI.ArcGIS.Geometry.IPolyline,ESRI.ArcGIS.Geometry.IPolyline,ESRI.ArcGIS.Geometry.IPolyline@)">
+	<summary>
+ Routine qui permet d'éliminer les triangles de la polyligne de généralisation.
+ La partie la plus longue de chaque triangle est éliminée.
+ </summary>
+	<param name="pPolyline">Interface contenant la polyligne à généraliser.</param>
+	<param name="pPolylineErr">Interface contenant la polyligne d'erreurs de généralisation.</param>
+	<param name="pPolylineGen">Interface contenant la polyligne de généralisation.</param>
+</member><member name="M:BarreGeneralisation.clsGeneraliserGeometrie.EliminerTrianglePolyligne(ESRI.ArcGIS.Geometry.IPolyline,ESRI.ArcGIS.Geometry.IPolyline@)">
+	<summary>
+ Routine qui permet de'éliminer les triangles de la polyligne de généralisation.
+ La partie la plus longue de chaque triangle est éliminée.
+ </summary>
+	<param name="pPolyline">Interface contenant la polyligne à généraliser.</param>
 	<param name="pPolylineGen">Interface contenant la polyligne de généralisation.</param>
 </member><member name="M:BarreGeneralisation.clsGeneraliserGeometrie.CreerPolygoneGeneralisation(ESRI.ArcGIS.Geometry.IPolygon,ESRI.ArcGIS.Geometry.IGeometryBag,System.Double,System.Double,System.Double,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IPolygon@)">
 	<summary>
@@ -162,31 +200,26 @@ Date : 05 septembre 2017
 </member><member name="T:BarreGeneralisation.clsGeneraliserGeometrie">
 	<summary>
  Classe qui permet d'identifier et corriger la généralisation d'une géométrie.
-
-<remarks>
- Auteur : Michel Pothier
- Date : 14 juin 2017
-</remarks>
-	</summary>
-</member><member name="M:BarreGeneralisation.TriangulationDelaunay.ConnecterPointsConnexionPolygone(ESRI.ArcGIS.Geometry.IMultipoint,ESRI.ArcGIS.Geometry.IPolygon@)">
-	<summary>
- Routine qui permet d'ajouter les sommets des points de connexion au polygone.
  </summary>
-	<param name="pPointsConnexion">Interface contenant les points de connexion.</param>
-	<param name="pPolygon">Polygone utilisée pour effectuer la généralisation d'un anneau intérieur.</param>
-</member><member name="M:BarreGeneralisation.TriangulationDelaunay.ConnecterLignesPolygone(ESRI.ArcGIS.Geometry.IPolyline,ESRI.ArcGIS.Geometry.IPolygon@)">
-	<summary>
- Routine qui permet d'ajouter les sommets de connexion des lignes des triangles de Delaunay au polygone.
- </summary>
-	<param name="pLignesInt">Interface contenant les lignes intérieures des triangles de Delaunay.</param>
-	<param name="pPolygon">Polygone utilisée pour effectuer la généralisation d'un anneau intérieur.</param>
 </member><member name="M:BarreGeneralisation.TriangulationDelaunay.ConnecterLignesPolyligne(ESRI.ArcGIS.Geometry.IPolyline,ESRI.ArcGIS.Geometry.IPolyline@)">
 	<summary>
  Routine qui permet d'ajouter les sommets de connexion des lignes des triangles de Delaunay à la polyligne.
  </summary>
 	<param name="pLignes">Interface contenant les lignes des triangles de Delaunay.</param>
 	<param name="pPolyline">Polyligne utilisée pour effectuer la généralisation de ligne.</param>
-</member><member name="M:BarreGeneralisation.TriangulationDelaunay.CreerSqueletteLigneDelaunay(ESRI.ArcGIS.Geometry.IPolyline,System.Double,System.Double,ESRI.ArcGIS.Geometry.IPolyline@,System.Collections.Generic.Dictionary{System.Int32,BarreGeneralisation.TriangulationDelaunay.Noeud}@,ESRI.ArcGIS.Geometry.IGeometryBag@,ESRI.ArcGIS.Geometry.IGeometryBag@)">
+</member><member name="M:BarreGeneralisation.TriangulationDelaunay.CreerSqueletteLigneDelaunay(ESRI.ArcGIS.Geometry.IPath,System.Double,System.Double,ESRI.ArcGIS.Geometry.IPolyline@,System.Collections.Generic.Dictionary{System.Int32,BarreGeneralisation.TriangulationDelaunay.Noeud}@,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IGeometryBag@,ESRI.ArcGIS.Geometry.IGeometryBag@)">
+	<summary>
+ Routine qui permet de créer le squelette d'une ligne en utilisant les lignes des triangles de Delaunay.
+ </summary>
+	<param name="pPath"> Ligne utilisée pour créer le squelette.</param>
+	<param name="dLargMin"> Largeur minimum utilisée pour créer le squelette.</param>
+	<param name="dLongMin"> Longueur minimale utilisée pour créer le squelette.</param>
+	<param name="pSquelette"> Interface contenant le squelette de la ligne.</param>
+	<param name="pSqueletteEnv"> Interface contenant le squelette de la ligne avec son enveloppe.</param>
+	<param name="pDictLiens"> Dictionnaire contenant l'information des sommets de la ligne à traiter.</param>
+	<param name="pBagDroites"> Interface contenant le Bag des droites des triangles de Delaunay utilisées pour créer le squelette de la ligne.</param>
+	<param name="pBagDroitesEnv"> Interface contenant les droites des triangles de Delaunay avec son enveloppe.</param>
+</member><member name="M:BarreGeneralisation.TriangulationDelaunay.CreerSqueletteLigneDelaunay(ESRI.ArcGIS.Geometry.IPolyline,System.Double,System.Double,ESRI.ArcGIS.Geometry.IPolyline@,System.Collections.Generic.Dictionary{System.Int32,BarreGeneralisation.TriangulationDelaunay.Noeud}@,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IGeometryBag@,ESRI.ArcGIS.Geometry.IGeometryBag@)">
 	<summary>
  Routine qui permet de créer le squelette d'une ligne en utilisant les lignes des triangles de Delaunay.
  </summary>
@@ -194,9 +227,10 @@ Date : 05 septembre 2017
 	<param name="dLargMin"> Largeur minimum utilisée pour créer le squelette.</param>
 	<param name="dLongMin"> Longueur minimale utilisée pour créer le squelette.</param>
 	<param name="pSquelette"> Interface contenant le squelette de la ligne.</param>
+	<param name="pSqueletteEnv"> Interface contenant le squelette de la ligne avec son enveloppe.</param>
 	<param name="pDictLiens"> Dictionnaire contenant l'information des sommets de la ligne à traiter.</param>
-	<param name="pBagDroitesEnv"> Interface contenant le Bag des droites des triangles de Delaunay utilisées pour créer le squelette de la ligne avec son enveloppe.</param>
 	<param name="pBagDroites"> Interface contenant le Bag des droites des triangles de Delaunay utilisées pour créer le squelette de la ligne.</param>
+	<param name="pBagDroitesEnv"> Interface contenant les droites des triangles de Delaunay avec son enveloppe.</param>
 </member><member name="M:BarreGeneralisation.TriangulationDelaunay.CreerSquelettePolygoneDelaunay(ESRI.ArcGIS.Geometry.IPolygon4,ESRI.ArcGIS.Geometry.IMultipoint,System.Double,System.Double,System.Double,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IGeometryBag@)">
 	<summary>
  Routine qui permet de créer et retourner les lignes du squelette d'un polygone dans une Polyline.
@@ -208,13 +242,13 @@ Date : 05 septembre 2017
 	<param name="dDistLat"> Distance latérale utilisée pour éliminer des sommets en trop.</param>
 	<param name="dDistMin"> Distance minimum utilisée pour ajouter des sommets.</param>
 	<param name="dLongMin"> Longueur minimale utilisée pour éliminer des lignes du squelette trop petites.</param>
-</member><member name="M:BarreGeneralisation.TriangulationDelaunay.CreerPolygoneExterieur(ESRI.ArcGIS.Geometry.IPolygon,System.Double)">
+</member><member name="M:BarreGeneralisation.TriangulationDelaunay.CreerPolygoneExterieur(ESRI.ArcGIS.Geometry.IGeometry,System.Double)">
 	<summary>
- Fonction qui permet de retourner le Polygone extérieur d'un Polygon à partir d'une largeur minimum.
+ Fonction qui permet de retourner le Polygone extérieur d'une géométrie à partir d'une largeur minimum.
  </summary>
-	<param name="pPolygon">Polygone utilisée pour effectuer la généralisation.</param>
+	<param name="pGeometry">Géométrie utilisée pour créer un polygone extérieure.</param>
 	<param name="dLargMin"> Largeur minimum utilisée pour créer le polygone.</param>
-	<returns>Polygon contenant le polygone extérieur à un polygone.</returns>
+	<returns>Polygon contenant le polygone extérieur à un polygone ou à une ligne.</returns>
 </member><member name="M:BarreGeneralisation.TriangulationDelaunay.AjouterEnveloppePolyligne(ESRI.ArcGIS.Geometry.IPolyline,System.Double)">
 	<summary>
  Fonction qui permet de retourner la polyligne dans laquelle l'enveloppe a été ajoutée à partir d'une largeur minimum.
@@ -247,8 +281,8 @@ Date : 05 septembre 2017
  Routine qui permet de créer et retourner les lignes des triangles de Delaunay.
  </summary>
 	<param name="pGeometry">Géométrie utilisée pour trouver les lignes des triangles de Delaunay.</param>
-	<param name="pLignesTriangles">Interface contenant les lignes des triangles de Delaunay.</param>
-	<remarks>Les lignes des triangles de Delaunay ne sont pas découpées.</remarks>
+	<param name="pLignesTriangles">Interface contenant les lignes des triangles de Delaunay sans les limites des polygones ou sans la ligne.</param>
+	<returns>IPolyline contenant toutes les lignes des triangles de Delaunay</returns>
 </member><member name="M:BarreGeneralisation.TriangulationDelaunay.CreerPolyligneTrianglesDelaunay(ESRI.ArcGIS.Geometry.IGeometry,ESRI.ArcGIS.Geometry.IPolyline@,ESRI.ArcGIS.Geometry.IPolyline@)">
 	<summary>
  Routine qui permet de créer et retourner les lignes des triangles de Delaunay qui sont à l'intérieure et l'extérieure de la géométrie.
@@ -705,81 +739,6 @@ Date : 05 septembre 2017
 	<summary>
  Classe qui permet de créer et gérer un Diagramme de Voronoi.
  </summary>
-</member><member name="T:BarreGeneralisation.cmdAdoucir">
-	<summary>
- Commande qui permet d'adoucir les lignes et les limites des polygones pour les éléments sélectionnés selon une distance minimum.
-</summary>
-	<remarks>
-Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être utilisé dans ArcMap (ArcGisESRI).
-
-Auteur : Michel Pothier
-Date : 18 septembre 2017
-</remarks>
-</member><member name="T:BarreGeneralisation.cmdCorrigerLongueurLigne">
-	<summary>
- Commande qui permet de corriger la longueur des lignes des éléments sélectionnés selon une longueur minimale
- à l'aide des outils de topologie tout en respectant les éléments en relation.
-</summary>
-	<remarks>
-Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être utilisé dans ArcMap (ArcGisESRI).
-
-Auteur : Michel Pothier
-Date : 28 juin 2017
-</remarks>
-</member><member name="T:BarreGeneralisation.cmdCorrigerFiltrage">
-	<summary>
- Commande qui permet de corriger le filtrage des éléments sélectionnés selon une distance latérale (Douglas-Peuker) 
- à l'aide des outils de topologie tout en conservant la connexion entre les éléments.
-</summary>
-	<remarks>
-Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être utilisé dans ArcMap (ArcGisESRI).
-
-Auteur : Michel Pothier
-Date : 19 juin 2017
-</remarks>
-</member><member name="T:BarreGeneralisation.cmdCorrigerGeneralisationInterieure">
-	<summary>
- Commande qui permet de corriger la généralisation intérieure des éléments sélectionnés selon une largeur, une longueur et une superficie minimale
- à l'aide des outils de topologie tout en respectant les éléments en relation.
-</summary>
-	<remarks>
-Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être utilisé dans ArcMap (ArcGisESRI).
-
-Auteur : Michel Pothier
-Date : 05 septembre 2017
-</remarks>
-</member><member name="T:BarreGeneralisation.cmdActiverMenu">
-	<summary>
- Permet d'activer un menu pour afficher l'information des paramètres d'édition.
-</summary>
-	<remarks>
- Auteur : Michel Pothier
- Date : 15 Août 2017
-</remarks>
-</member><member name="P:BarreGeneralisation.My.Resources.Resources.ResourceManager">
-	<summary>
-  Returns the cached ResourceManager instance used by this class.
-</summary>
-</member><member name="P:BarreGeneralisation.My.Resources.Resources.Culture">
-	<summary>
-  Overrides the current thread's CurrentUICulture property for all
-  resource lookups using this strongly typed resource class.
-</summary>
-</member><member name="T:BarreGeneralisation.My.Resources.Resources">
-	<summary>
-  A strongly-typed resource class, for looking up localized strings, etc.
-</summary>
-</member><member name="T:BarreGeneralisation.cmdCorrigerProximite">
-	<summary>
- Commande qui permet de corriger la proximité des éléments sélectionnés selon une tolérance à l'aide des outils de topologie.
-</summary>
-	<remarks>
-Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être
-utilisé dans ArcMap (ArcGisESRI).
-
-Auteur : Michel Pothier
-Date : 3 mai 2011
-</remarks>
 </member><member name="F:BarreGeneralisation.clsGererMapLayer.gpMap">
 	<summary>Interface contenant la Map à Gérer.</summary>
 </member><member name="F:BarreGeneralisation.clsGererMapLayer.gqFeatureLayerCollection">
@@ -892,38 +851,56 @@ Routine qui permet de vider la mémoire des objets de la classe.
  Auteur : Michel Pothier
  Date : 6 Mai 2011
 </remarks>
-</member><member name="P:BarreGeneralisation.dckMenuGeneralisation.Hook">
+</member><member name="T:BarreGeneralisation.cmdCorrigerGeneralisationExterieure">
 	<summary>
- Host object of the dockable window
- </summary>
-</member><member name="T:BarreGeneralisation.dckMenuGeneralisation.AddinImpl">
-	<summary>
- Implementation class of the dockable window add-in. It is responsible for
- creating and disposing the user interface class for the dockable window.
- </summary>
-</member><member name="M:BarreGeneralisation.dckMenuGeneralisation.Init">
-	<summary>
- Permet d'initialiser le menu.
-</summary>
-</member><member name="M:BarreGeneralisation.dckMenuGeneralisation.AjouterItem(System.Windows.Forms.ComboBox@)">
-	<summary>
- Permet d'ajouter une valeur dans les items mais seulement si la valeur est absent.
-</summary>
-</member><member name="M:BarreGeneralisation.dckMenuGeneralisation.RemplirComboBox(System.Windows.Forms.ComboBox@)">
-	<summary>
- Routine qui permet de remplir le ComboBox à partir des noms de FeatureLayer contenus dans la Map active.
-</summary>
-</member><member name="M:BarreGeneralisation.dckMenuGeneralisation.dckMenuGeneralisation_Resize(System.Object,System.EventArgs)">
-	<summary>
- Routine qui permet de modifier les items du menu selon la dimension du menu.
-</summary>
-</member><member name="T:BarreGeneralisation.dckMenuGeneralisation">
-	<summary>
-Menu qui permet d'afficher les paramètres et les valeurs des dimensions minimales.
-
+ Commande qui permet de corriger la généralisation extérieure des éléments sélectionnés selon une largeur, une longueur et une superficie minimale
+ à l'aide des outils de topologie tout en respectant les éléments en relation.
 </summary>
 	<remarks>
+Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être utilisé dans ArcMap (ArcGisESRI).
+
 Auteur : Michel Pothier
+Date : 05 septembre 2017
+</remarks>
+</member><member name="T:BarreGeneralisation.cmdCorrigerFiltrage">
+	<summary>
+ Commande qui permet de corriger le filtrage des éléments sélectionnés selon une distance latérale (Douglas-Peuker) 
+ à l'aide des outils de topologie tout en conservant la connexion entre les éléments.
+</summary>
+	<remarks>
+Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être utilisé dans ArcMap (ArcGisESRI).
+
+Auteur : Michel Pothier
+Date : 19 juin 2017
+</remarks>
+</member><member name="T:BarreGeneralisation.cmdCorrigerSegmentationEnTrop">
+	<summary>
+ Commande qui permet de corriger la segmentation en trop des éléments sélectionnés selon les éléments en relation à l'aide des outils de topologie.
+</summary>
+	<remarks>
+Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être utilisé dans ArcMap (ArcGisESRI).
+
+Auteur : Michel Pothier
+Date : 18 juillet 2017
+</remarks>
+</member><member name="T:BarreGeneralisation.cmdActiverMenu">
+	<summary>
+ Permet d'activer un menu pour afficher l'information des paramètres d'édition.
+</summary>
+	<remarks>
+ Auteur : Michel Pothier
+ Date : 15 Août 2017
+</remarks>
+</member><member name="T:BarreGeneralisation.cmdSimplifier">
+	<summary>
+ Commande qui permet de simplifier la géométrie des éléments sélectionnés afin de les rendre valide.
+</summary>
+	<remarks>
+Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être
+utilisé dans ArcMap (ArcGisESRI).
+
+Auteur : Michel Pothier
+Date : 3 mai 2011
 </remarks>
 </member><member name="F:BarreGeneralisation.modGeneralisation.m_MenuGeneralisation">
 	<summary> Classe contenant le menu des paramètres de généralisation. </summary>
@@ -1624,15 +1601,83 @@ A class for looking up declarative information in the associated configuration x
 	<summary>
  Expose this instance of Add-in class externally
  </summary>
-</member><member name="T:BarreGeneralisation.cmdCorrigerSegmentationManquante">
+</member><member name="T:BarreGeneralisation.cmdCorrigerLongueurLigne">
 	<summary>
- Commande qui permet de corriger la segmentation manquante des éléments sélectionnés selon les éléments en relation à l'aide des outils de topologie.
+ Commande qui permet de corriger la longueur des lignes des éléments sélectionnés selon une longueur minimale
+ à l'aide des outils de topologie tout en respectant les éléments en relation.
 </summary>
 	<remarks>
 Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être utilisé dans ArcMap (ArcGisESRI).
 
 Auteur : Michel Pothier
-Date : 04 juillet 2017
+Date : 28 juin 2017
+</remarks>
+</member><member name="T:BarreGeneralisation.cmdCorrigerProximite">
+	<summary>
+ Commande qui permet de corriger la proximité des éléments sélectionnés selon une tolérance à l'aide des outils de topologie.
+</summary>
+	<remarks>
+Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être
+utilisé dans ArcMap (ArcGisESRI).
+
+Auteur : Michel Pothier
+Date : 3 mai 2011
+</remarks>
+</member><member name="P:BarreGeneralisation.My.Resources.Resources.ResourceManager">
+	<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member><member name="P:BarreGeneralisation.My.Resources.Resources.Culture">
+	<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member><member name="T:BarreGeneralisation.My.Resources.Resources">
+	<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member><member name="P:BarreGeneralisation.dckMenuGeneralisation.Hook">
+	<summary>
+ Host object of the dockable window
+ </summary>
+</member><member name="T:BarreGeneralisation.dckMenuGeneralisation.AddinImpl">
+	<summary>
+ Implementation class of the dockable window add-in. It is responsible for
+ creating and disposing the user interface class for the dockable window.
+ </summary>
+</member><member name="M:BarreGeneralisation.dckMenuGeneralisation.Init">
+	<summary>
+ Permet d'initialiser le menu.
+</summary>
+</member><member name="M:BarreGeneralisation.dckMenuGeneralisation.AjouterItem(System.Windows.Forms.ComboBox@)">
+	<summary>
+ Permet d'ajouter une valeur dans les items mais seulement si la valeur est absent.
+</summary>
+</member><member name="M:BarreGeneralisation.dckMenuGeneralisation.RemplirComboBox(System.Windows.Forms.ComboBox@)">
+	<summary>
+ Routine qui permet de remplir le ComboBox à partir des noms de FeatureLayer contenus dans la Map active.
+</summary>
+</member><member name="M:BarreGeneralisation.dckMenuGeneralisation.dckMenuGeneralisation_Resize(System.Object,System.EventArgs)">
+	<summary>
+ Routine qui permet de modifier les items du menu selon la dimension du menu.
+</summary>
+</member><member name="T:BarreGeneralisation.dckMenuGeneralisation">
+	<summary>
+Menu qui permet d'afficher les paramètres et les valeurs des dimensions minimales.
+
+</summary>
+	<remarks>
+Auteur : Michel Pothier
+</remarks>
+</member><member name="T:BarreGeneralisation.cmdAdoucir">
+	<summary>
+ Commande qui permet d'adoucir les lignes et les limites des polygones pour les éléments sélectionnés selon une distance minimum.
+</summary>
+	<remarks>
+Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être utilisé dans ArcMap (ArcGisESRI).
+
+Auteur : Michel Pothier
+Date : 18 septembre 2017
 </remarks>
 </member><member name="T:BarreGeneralisation.cmdCorrigerGeneralisationLigne">
 	<summary>
@@ -1645,15 +1690,37 @@ Ce traitement est utilisable en mode interactif à l'aide de ses interfaces grap
 Auteur : Michel Pothier
 Date : 12 septembre 2017
 </remarks>
-</member><member name="T:BarreGeneralisation.cmdCorrigerDensiteLigne">
+</member><member name="T:BarreGeneralisation.cmdCorrigerGeneralisationInterieure">
 	<summary>
- Commande qui permet de corriger la densité des lignes fermées pour les éléments sélectionnés selon une longueur minimum.
+ Commande qui permet de corriger la généralisation intérieure des éléments sélectionnés selon une largeur, une longueur et une superficie minimale
+ à l'aide des outils de topologie tout en respectant les éléments en relation.
 </summary>
 	<remarks>
 Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être utilisé dans ArcMap (ArcGisESRI).
 
 Auteur : Michel Pothier
-Date : 20 septembre 2017
+Date : 05 septembre 2017
+</remarks>
+</member><member name="T:BarreGeneralisation.cmdCorrigerSuperficieSurface">
+	<summary>
+ Commande qui permet de corriger la superficie des surfaces des éléments sélectionnés selon une superficie minimale.
+</summary>
+	<remarks>
+Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être utilisé dans ArcMap (ArcGisESRI).
+
+Auteur : Michel Pothier
+Date : 18 juillet 2017
+</remarks>
+</member><member name="T:BarreGeneralisation.cmdCorrigerDupplicationLigne">
+	<summary>
+ Commande qui permet de corriger la dupplication des lignes pour les éléments sélectionnés de type ligne
+ à l'aide des outils de topologie tout en respectant les éléments en relation.
+</summary>
+	<remarks>
+Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être utilisé dans ArcMap (ArcGisESRI).
+
+Auteur : Michel Pothier
+Date : 05 septembre 2017
 </remarks>
 </member><member name="T:BarreGeneralisation.cmdCreerSquelette">
 	<summary>
@@ -1666,38 +1733,25 @@ Ce traitement est utilisable en mode interactif à l'aide de ses interfaces grap
 Auteur : Michel Pothier
 Date : 05 septembre 2017
 </remarks>
-</member><member name="T:BarreGeneralisation.cmdSimplifier">
+</member><member name="T:BarreGeneralisation.cmdCorrigerSegmentationManquante">
 	<summary>
- Commande qui permet de simplifier la géométrie des éléments sélectionnés afin de les rendre valide.
-</summary>
-	<remarks>
-Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être
-utilisé dans ArcMap (ArcGisESRI).
-
-Auteur : Michel Pothier
-Date : 3 mai 2011
-</remarks>
-</member><member name="T:BarreGeneralisation.cmdCorrigerGeneralisationExterieure">
-	<summary>
- Commande qui permet de corriger la généralisation extérieure des éléments sélectionnés selon une largeur, une longueur et une superficie minimale
- à l'aide des outils de topologie tout en respectant les éléments en relation.
+ Commande qui permet de corriger la segmentation manquante des éléments sélectionnés selon les éléments en relation à l'aide des outils de topologie.
 </summary>
 	<remarks>
 Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être utilisé dans ArcMap (ArcGisESRI).
 
 Auteur : Michel Pothier
-Date : 05 septembre 2017
+Date : 04 juillet 2017
 </remarks>
-</member><member name="T:BarreGeneralisation.cmdCorrigerLongueurDroite">
+</member><member name="T:BarreGeneralisation.cmdCorrigerDensiteLigne">
 	<summary>
- Commande qui permet de corriger la longueur des droites des éléments sélectionnés selon une longueur 
- à l'aide des outils de topologie tout en conservant la connexion entre les éléments.
+ Commande qui permet de corriger la densité des lignes fermées pour les éléments sélectionnés selon une longueur minimum.
 </summary>
 	<remarks>
 Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être utilisé dans ArcMap (ArcGisESRI).
 
 Auteur : Michel Pothier
-Date : 21 juin 2017
+Date : 20 septembre 2017
 </remarks>
 </member>
 </members>

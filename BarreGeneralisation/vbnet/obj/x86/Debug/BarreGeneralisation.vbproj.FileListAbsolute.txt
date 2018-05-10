@@ -45,3 +45,14 @@ C:\mpo\GitHub\GeneralisationCartographique\BarreGeneralisation\vbnet\obj\x86\Deb
 C:\mpo\GitHub\GeneralisationCartographique\BarreGeneralisation\vbnet\obj\x86\Debug\BarreGeneralisation.xml
 C:\mpo\GitHub\GeneralisationCartographique\BarreGeneralisation\vbnet\obj\x86\Debug\BarreGeneralisation.pdb
 C:\mpo\GitHub\GeneralisationCartographique\BarreGeneralisation\vbnet\bin\x86\Debug\BarreGeneralisation.esriAddIn
+C:\Users\mpothier\Documents\GitHub\GeneralisationCartographique\BarreGeneralisation\vbnet\obj\x86\Debug\BarreGeneralisation.dckMenuGeneralisation.resources
+C:\Users\mpothier\Documents\GitHub\GeneralisationCartographique\BarreGeneralisation\vbnet\obj\x86\Debug\BarreGeneralisation.Resources.resources
+C:\Users\mpothier\Documents\GitHub\GeneralisationCartographique\BarreGeneralisation\vbnet\obj\x86\Debug\BarreGeneralisation.vbproj.GenerateResource.Cache
+C:\Users\mpothier\Documents\GitHub\GeneralisationCartographique\BarreGeneralisation\vbnet\obj\x86\Debug\BarreGeneralisation.dll
+C:\Users\mpothier\Documents\GitHub\GeneralisationCartographique\BarreGeneralisation\vbnet\obj\x86\Debug\BarreGeneralisation.xml
+C:\Users\mpothier\Documents\GitHub\GeneralisationCartographique\BarreGeneralisation\vbnet\obj\x86\Debug\BarreGeneralisation.pdb
+C:\Users\mpothier\Documents\GitHub\GeneralisationCartographique\BarreGeneralisation\vbnet\bin\x86\Debug\BarreGeneralisation.dll
+C:\Users\mpothier\Documents\GitHub\GeneralisationCartographique\BarreGeneralisation\vbnet\bin\x86\Debug\BarreGeneralisation.pdb
+C:\Users\mpothier\Documents\GitHub\GeneralisationCartographique\BarreGeneralisation\vbnet\bin\x86\Debug\BarreGeneralisation.xml
+C:\Users\mpothier\Documents\GitHub\GeneralisationCartographique\BarreGeneralisation\vbnet\bin\x86\Debug\LibrairieClassesUtilitaires.dll
+C:\Users\mpothier\Documents\GitHub\GeneralisationCartographique\BarreGeneralisation\vbnet\bin\x86\Debug\BarreGeneralisation.esriAddIn
