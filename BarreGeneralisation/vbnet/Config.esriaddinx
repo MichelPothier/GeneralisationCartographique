@@ -94,7 +94,7 @@
                 category="MPO-BarreGeneralisation" image="Images\cmdCreerSquelette.png" onDemand="false" />
       </Commands>
       <Toolbars>
-        <Toolbar id="BarreGeneralisation_BarreGeneralisation" caption="MPO-BarreGeneralisation (10 Mai 2018)" showInitially="false">
+        <Toolbar id="BarreGeneralisation_BarreGeneralisation" caption="MPO-BarreGeneralisation (14 Mai 2018)" showInitially="false">
           <Items>
             <Button refID="MPO_BarreGeneralisation_cmdActiverMenu" />
             <Button refID="MPO_BarreGeneralisation_cmdSimplifier" separator="true" />
