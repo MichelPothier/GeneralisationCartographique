@@ -8,7 +8,7 @@ Imports ESRI.ArcGIS.Carto
 Imports System.Windows.Forms
 Imports ESRI.ArcGIS.Display
 Imports ESRI.ArcGIS.esriSystem
-Imports System.IO
+Imports System
 
 '**
 'Nom de la composante : modGeneralisation.vb 
@@ -5404,6 +5404,157 @@ Module modGeneralisation
 
 #Region "Routines et fonctions pour corriger la généralisation gauche/droite des éléments de type ligne"
     '''<summary>
+    ''' Routine qui permet de corriger la généralisation des éléments de type ligne sélectionnés fractionnées. 
+    '''</summary>
+    ''' 
+    '''<param name="dPrecision"> Contient la précision des données utilisée pour la topologie des éléments.</param>
+    '''<param name="dDistLat"> Contient la distance latérale minimale utilisée pour généraliser les géométries des éléments.</param>
+    '''<param name="dLargGenMin"> Contient la largeur de généralisation minimale utilisée pour généraliser les géométries des éléments.</param>
+    '''<param name="dLongGenMin"> Contient la longueur de généralisation minimale utilisée pour généraliser les géométries des éléments.</param>
+    '''<param name="dLongMin"> Contient la longueur minimale des lignes.</param>
+    '''<param name="pFeatureLayerGeneraliser"> Contient le FeatureLayer dans lequel les éléments généralisés seront créés.</param>
+    '''<param name="bCorriger"> Permet d'indiquer si on doit corriger les lignes en trop des géométries des éléments.</param>
+    '''<param name="bCreerFichierErreurs"> Permet d'indiquer si on doit créer le fichier d'erreurs.</param>
+    '''<param name="iNbErreurs"> Contient le nombre d'erreurs.</param>
+    '''<param name="pTrackCancel"> Contient la barre de progression.</param>
+    ''' 
+    Public Sub CorrigerGeneralisationLignesFractionnees(ByVal dPrecision As Double, ByVal dDistLat As Double, ByVal dLargGenMin As Double, ByVal dLongGenMin As Double,
+                                                       ByVal dLongMin As Double, ByVal pFeatureLayerGeneraliser As IFeatureLayer, ByVal bCorriger As Boolean,
+                                                       ByVal bCreerFichierErreurs As Boolean, ByRef iNbErreurs As Integer, ByRef pTrackCancel As ITrackCancel)
+        'Déclarer les variables de travail
+        Dim pEditor As IEditor = Nothing                    'Interface ESRI pour effectuer l'édition des éléments.
+        Dim pGererMapLayer As clsGererMapLayer = Nothing    'Objet utiliser pour extraire la collection des FeatureLayers visibles.
+        Dim pEnumFeature As IEnumFeature = Nothing          'Interface ESRI utilisé pour extraire les éléments de la sélection.
+        Dim pFeature As IFeature = Nothing                  'Interface ESRI contenant un élément en sélection.
+        Dim pEnvelope As IEnvelope = Nothing                'Interface contenant l'enveloppe de l'élément traité.
+        Dim pTopologyGraph As ITopologyGraph = Nothing      'Interface contenant la topologie.
+        Dim pFeatureLayersColl As Collection = Nothing      'Objet contenant la collection des FeatureLayers utilisés dans la Topologie.
+        Dim pFeatureLayer As IFeatureLayer = Nothing        'Interface contenant la Featureclass d'erreur.
+        Dim pBagErreurs As IGeometryBag = Nothing           'Interface contenant les lignes et les droites en trop dans la géométrie d'un élément.
+        Dim pGeomColl As IGeometryCollection = Nothing      'Interface pour extraire les lignes en erreurs.
+        Dim pMap As IMap = Nothing                          'Interface pour sélectionner des éléments.
+
+        Try
+            'Interface pour vérifer si on est en mode édition
+            pEditor = CType(m_Application.FindExtensionByName("ESRI Object Editor"), IEditor)
+
+            'Vérifier si on est en mode édition
+            If pEditor.EditState = esriEditState.esriStateEditing Then
+                'Débuter l'opération UnDo
+                pEditor.StartOperation()
+
+                'Créer le Bag vide des lignes en erreur
+                pBagErreurs = New GeometryBag
+                pBagErreurs.SpatialReference = m_MxDocument.FocusMap.SpatialReference
+                'Interface pour extraire le nombre d'erreurs
+                pGeomColl = CType(pBagErreurs, IGeometryCollection)
+                iNbErreurs = pGeomColl.GeometryCount
+
+                'Objet utiliser pour extraire la collection des FeatureLayers
+                pGererMapLayer = New clsGererMapLayer(m_MxDocument.FocusMap)
+                'Définir la collection des FeatureLayers utilisés dans la topologie
+                pFeatureLayersColl = pGererMapLayer.DefinirCollectionFeatureLayer(False)
+
+                'Définir l'enveloppe des éléments sélectionnés
+                'pEnvelope = EnveloppeElementsSelectionner(pEditor)
+                pEnvelope = m_MxDocument.ActiveView.Extent
+
+                'Création de la topologie
+                pTrackCancel.Progressor.Message = "Création de la topologie : Précision=" & dPrecision.ToString & "..."
+                pTopologyGraph = CreerTopologyGraph(pEnvelope, pFeatureLayersColl, dPrecision)
+
+                'Initialiser le message d'exécution
+                pTrackCancel.Progressor.Message = "Correction de la généralisation des lignes fractionnées (LargGenMin=" & dLargGenMin.ToString & ", LongGenMin=" & dLongGenMin.ToString & ", LongMin=" & dLongMin.ToString & ") ..."
+
+                'Interface pour extraire le premier élément de la sélection
+                pEnumFeature = CType(pEditor.EditSelection, IEnumFeature)
+                'Réinitialiser la recherche des éléments
+                pEnumFeature.Reset()
+                'Extraire le premier élément de la sélection
+                pFeature = pEnumFeature.Next
+
+                'Traite tous les éléments sélectionnés
+                Do Until pFeature Is Nothing
+                    'Corriger la généralisation de l'élément de type ligne fragmentée
+                    Call GeneraliserLigneFractionneeElement(dPrecision, dDistLat, dLargGenMin, dLongGenMin, dLongMin, pFeatureLayerGeneraliser, bCorriger,
+                                                            pTopologyGraph, pFeature, pBagErreurs)
+
+                    'Vérifier si un Cancel a été effectué
+                    If pTrackCancel.Continue = False Then Exit Do
+
+                    'Extraire le prochain élément de la sélection
+                    pFeature = pEnumFeature.Next
+                Loop
+
+                'Retourner le nombre d'erreurs
+                iNbErreurs = pGeomColl.GeometryCount
+
+                'Vérifier la présecense d'une modification
+                If pGeomColl.GeometryCount > 0 Then
+                    'Vérifier si on doit corriger
+                    If bCorriger Then
+                        'Terminer l'opération UnDo
+                        pEditor.StopOperation("Corriger la généralisation des lignes fractionnées")
+
+                        'Enlever la sélection
+                        m_MxDocument.FocusMap.ClearSelection()
+                        'Sélectionner les éléments en erreur
+                        'm_MxDocument.FocusMap.SelectByShape(pBagErreurs, Nothing, False)
+
+                        'Sinon
+                    Else
+                        'Annuler l'opération UnDo
+                        pEditor.AbortOperation()
+                    End If
+
+                    'Vérifier si on doit créer le fichier d'erreurs
+                    If bCreerFichierErreurs Then
+                        'Initialiser le message d'exécution
+                        pTrackCancel.Progressor.Message = "Création du FeatureLayer d'erreurs de généralisation des lignes fractionnées (NbErr=" & iNbErreurs.ToString & ") ..."
+                        'Créer le FeatureLayer des erreurs
+                        pFeatureLayer = CreerFeatureLayerErreurs("CorrigerGeneralisationLignes_1", "Erreur de généralisation de ligne fragmentées : Larg=" _
+                                                                 & dLongMin.ToString & ", LongMin=" & dLongMin.ToString,
+                                                                 m_MxDocument.FocusMap.SpatialReference, esriGeometryType.esriGeometryPolyline, pBagErreurs)
+
+                        'Ajouter le FeatureLayer d'erreurs dans la map active
+                        m_MxDocument.FocusMap.AddLayer(pFeatureLayer)
+                    End If
+
+                    'Rafraîchir l'affichage
+                    m_MxDocument.ActiveView.Refresh()
+
+                    'Si aucune erreur
+                Else
+                    'Annuler l'opération UnDo
+                    pEditor.AbortOperation()
+                End If
+            End If
+
+            'Désactiver l'interface d'édition
+            pEditor = Nothing
+
+        Catch ex As Exception
+            'Message d'erreur
+            Throw
+        Finally
+            'Annuler l'opération UnDo
+            If Not pEditor Is Nothing Then pEditor.AbortOperation()
+            'Vider la mémoire
+            pEditor = Nothing
+            pGererMapLayer = Nothing
+            pEnumFeature = Nothing
+            pFeature = Nothing
+            pEnvelope = Nothing
+            pTopologyGraph = Nothing
+            pFeatureLayersColl = Nothing
+            pFeatureLayer = Nothing
+            pBagErreurs = Nothing
+            pGeomColl = Nothing
+            pMap = Nothing
+        End Try
+    End Sub
+
+    '''<summary>
     ''' Routine qui permet de corriger la généralisation gauche/droite des éléments de type ligne sélectionnés. 
     '''</summary>
     ''' 
@@ -5553,6 +5704,299 @@ Module modGeneralisation
             pMap = Nothing
         End Try
     End Sub
+
+    '''<summary>
+    ''' Routine qui permet de généraliser un élément de type ligne fractionnée et selon une largeur et une longueur minimum de généralisation et une longueur minimale des lignes. 
+    '''</summary>
+    ''' 
+    '''<param name="dPrecision"> Contient la précision des données utilisée pour la topologie des éléments.</param>
+    '''<param name="dDistLat"> Contient la distance latérale minimale utilisée pour généraliser les géométries des éléments.</param>
+    '''<param name="dLargGenMin"> Contient la largeur de généralisation minimale utilisée pour généraliser les géométries des éléments.</param>
+    '''<param name="dLongGenMin"> Contient la longueur de généralisation minimale utilisée pour généraliser les géométries des éléments.</param>
+    '''<param name="dLongMin"> Contient la longueur minimale des lignes.</param>
+    '''<param name="pFeatureLayerGeneraliser"> Contient le FeatureLayer dans lequel les éléments généralisés seront créés.</param>
+    '''<param name="bCorriger"> Permet d'indiquer si on doit corriger les lignes en trop des géométries des éléments.</param>
+    '''<param name="pTopologyGraph"> Interface contenant la topologie des éléments à généraliser.</param>
+    '''<param name="pFeature"> Interface contenant l'élément à généraliser.</param>
+    '''<param name="pBagErreurs"> Contient les géométries d'erreurs.</param>
+    ''' 
+    Public Sub GeneraliserLigneFractionneeElement(ByVal dPrecision As Double, ByVal dDistLat As Double, ByVal dLargGenMin As Double, ByVal dLongGenMin As Double, ByVal dLongMin As Double,
+                                                  ByVal pFeatureLayerGeneraliser As IFeatureLayer, ByVal bCorriger As Boolean,
+                                                  ByVal pTopologyGraph As ITopologyGraph, ByRef pFeature As IFeature, ByRef pBagErreurs As IGeometryBag)
+        'Déclarer les variables de travail
+        Dim pNewFeature As IFeature = Nothing               'Interface ESRI contenant un élément en sélection.
+        Dim pPolyline As IPolyline = Nothing                'Interface contenant la polyligne à traiter.
+        Dim pLigneFractionnee As IPolyline = Nothing        'Interface contenant la polyligne pfractionnée à traiter.
+        Dim pPolylineGen As IPolyline = Nothing             'Interface contenant la polyligne de généralisation.
+        Dim pPolylineErrTmp As IPolyline = Nothing          'Interface contenant la polyligne d'erreurs de généralisation temporaire.
+        Dim pPolylineErr As IPolyline = Nothing             'Interface contenant la polyligne d'erreurs de généralisation.
+        Dim pSquelette As IPolyline = Nothing               'Interface contenant le squelette.
+        Dim pSqueletteEnv As IPolyline = Nothing            'Interface contenant le squelette avec son enveloppe.
+        Dim pSqueletteTmp As IPolyline = Nothing            'Interface contenant le squelette temporaire.
+        Dim pBagDroitesTmp As IGeometryBag = Nothing        'Interface contenant les droites de Delaunay temporaire.
+        Dim pBagDroites As IGeometryBag = Nothing           'Interface contenant les droites de Delaunay.
+        Dim pBagDroitesEnv As IGeometryBag = Nothing        'Interface contenant les droites de Delaunay avec son enveloppe.
+        Dim pGeomColl As IGeometryCollection = Nothing      'Interface pour extraire les lignes en erreurs.
+        Dim pPointsConnexion As IMultipoint = Nothing       'Interface contenant les points de connexion.
+        Dim pTopoOp As ITopologicalOperator2 = Nothing      'Interface pour simplifier une géométrie.
+
+        Try
+            'Traite tous les éléments sélectionnés
+            If pFeature IsNot Nothing Then
+                'vérifier si la géométrie de l'élément est de type ligne
+                If pFeature.Shape.GeometryType = esriGeometryType.esriGeometryPolyline Then
+                    'Définir le polygone à généraliser
+                    'pPolyline = CType(pTopologyGraph.GetParentGeometry(CType(pFeature.Class, IFeatureClass), pFeature.OID), IPolyline)
+                    pPolyline = CType(pFeature.ShapeCopy, IPolyline)
+                    'Projeter la géométrie
+                    pPolyline.Project(pBagErreurs.SpatialReference)
+
+                    'Extraire les points de connexion
+                    pTopoOp = CType(pPolyline, ITopologicalOperator2)
+                    pPointsConnexion = CType(pTopoOp.Boundary, IMultipoint)
+
+                    'Fractionner une polyligne
+                    pLigneFractionnee = FractionnerPolyligne(pPolyline)
+
+                    'Généraliser la polyligne à droite
+                    Call clsGeneraliserGeometrie.GeneraliserLigne(pLigneFractionnee, pPointsConnexion, dDistLat, dLargGenMin, dLongGenMin, dLongMin,
+                                                                  pPolylineGen, pPolylineErr, pSquelette, pSqueletteEnv, pBagDroites, pBagDroitesEnv)
+
+                    'Vérifier si une erreur de généralisation est présente
+                    If bCorriger And Not pPolylineErr.IsEmpty Then
+                        'Interface pour extraire le nombre d'erreurs
+                        pGeomColl = CType(pBagErreurs, IGeometryCollection)
+                        'Ajouter l'erreur dans le Bag
+                        pGeomColl.AddGeometry(pPolylineErr)
+
+                        'Vérifier si l'élément doit être détruit
+                        If pPolylineGen.IsEmpty Then
+                            'Détruire l'élément
+                            pFeature.Delete()
+
+                            'Si la géométrie doit être modifiée
+                        Else
+                            'Interface pour simplifier une géométrie.
+                            pTopoOp = CType(pPolylineGen, ITopologicalOperator2)
+                            pTopoOp.IsKnownSimple_2 = False
+                            pTopoOp.Simplify()
+                            'Modifié la géométrie
+                            pFeature.Shape = pPolylineGen
+                            'Sauver la modification
+                            pFeature.Store()
+                        End If
+
+                        ''Vérfier si la classe de géneralisation est spécifié
+                        'If pFeatureLayerGeneraliser IsNot Nothing Then
+                        '    'Créer l'élément généralisé
+                        '    pNewFeature = pFeatureLayerGeneraliser.FeatureClass.CreateFeature
+                        '    'Définir la géométrie de l'élément généralisé
+                        '    pNewFeature.Shape = pPolylineErr
+                        '    'Sauver l'élément
+                        '    pNewFeature.Store()
+                        'End If
+                    End If
+                End If
+            End If
+
+        Catch ex As Exception
+            'Message d'erreur
+            Throw
+        Finally
+            'Vider la mémoire
+            pNewFeature = Nothing
+            pPolyline = Nothing
+            pLigneFractionnee = Nothing
+            pPolylineGen = Nothing
+            pPolylineErr = Nothing
+            pSquelette = Nothing
+            pBagDroites = Nothing
+            pPolylineErrTmp = Nothing
+            pSqueletteTmp = Nothing
+            pBagDroitesTmp = Nothing
+            pGeomColl = Nothing
+            pPointsConnexion = Nothing
+            pTopoOp = Nothing
+        End Try
+    End Sub
+
+    '''<summary>
+    ''' Fonction qui permet de fractionner une polyligne selon les angles aigus et obtus.
+    ''' La polyligne résultante contiendra des lignes (Path) de sens inversé entre les changement d'angle aigu et obtu des droites consécutives.
+    '''</summary>
+    '''
+    '''<param name="pPolyline"> Interface contenant la polyligne à fractionner.</param>
+    ''' 
+    ''' <returns>IPolyline contenant la polyligne fractionnée.</returns>
+    ''' 
+    Public Function FractionnerPolyligne(ByVal pPolyline As IPolyline) As IPolyline
+        'Déclarer les variables de travail
+        Dim pLigneFractionnee As IPolyline = Nothing        'Interface contenant la ligne fractionnée.
+        Dim pPath As IPath = Nothing                        'Interface contenant une partie de la ligne fractionnée.
+        Dim pGeomColl As IGeometryCollection = Nothing      'Interface pour extraire les lignes.
+        Dim pGeomCollAdd As IGeometryCollection = Nothing   'Interface pour ajouter les lignes.
+        Dim pSegColl As ISegmentCollection = Nothing        'Interface pour extraire les segments.
+        Dim pSegCollAdd As ISegmentCollection = Nothing     'Interface pour ajouter les segments.
+        Dim pSegment As ISegment = Nothing                  'Interface contenant un segment.
+        Dim pDemiSegment As ISegment = Nothing              'Interface contenant un demi segment.
+        Dim pPoint As Point = Nothing                       'Interface contenant un point.
+        Dim dAngleDepart As Double = -1                     'Contient l'angle de départ.
+        Dim dAngle As Double = -1                           'Contient l'angle de la droite traitée.
+        Dim dDiffDepart As Double = -1                      'Contient la différence d'angle entre deux droites consécutives de départ.
+        Dim dDiff As Double = -1                            'Contient la différence d'angle entre deux droites consécutives.
+
+        'Par defaut, la ligne fractionnée est la même que la ligne à traiter
+        FractionnerPolyligne = pPolyline
+
+        Try
+            'Sortir si la polyligne est vide
+            If pPolyline.IsEmpty Then Exit Function
+
+            'Créer une ligne fractionnée vide
+            pLigneFractionnee = New Polyline
+            pLigneFractionnee.SpatialReference = pPolyline.SpatialReference
+            'Interface pour ajouter une ligne
+            pGeomCollAdd = CType(pLigneFractionnee, IGeometryCollection)
+
+            'Interface pour extraire les composantes
+            pGeomColl = CType(pPolyline, IGeometryCollection)
+            'Traiter toutes les composantes
+            For i = 0 To pGeomColl.GeometryCount - 1
+                'Initialiser les angles
+                dAngleDepart = -1
+                dAngle = -1
+
+                'Interface pour extraire les segments
+                pSegColl = CType(pGeomColl.Geometry(i), ISegmentCollection)
+                'Traiter tous les segments de la composante
+                For j = 1 To pSegColl.SegmentCount - 1
+                    'Définir le segment à traiter
+                    pSegment = pSegColl.Segment(j)
+
+                    'Vérifier si l'angle de départ n'est pas initialisée
+                    If dAngleDepart = -1 Then
+                        'Initialiser l'angle de départ
+                        dAngleDepart = clsGeneraliserGeometrie.Angle(pSegColl.Segment(j - 1).FromPoint, pSegColl.Segment(j - 1).ToPoint)
+                        'Initialiser l'angle selon l'angle de départ
+                        dAngle = clsGeneraliserGeometrie.Angle(pSegColl.Segment(j).FromPoint, pSegColl.Segment(j).ToPoint)
+
+                        'Définir la différence d'angle
+                        dDiff = dAngleDepart - dAngle
+                        'Définir l'angle entre les deux droites consécutives
+                        If dDiff > -180 And dDiff < 180 Then
+                            dDiff = 180 - dDiff
+                        ElseIf dDiff < -180 Then
+                            dDiff = Math.Abs(180 + dDiff)
+                        ElseIf dDiff > 180 Then
+                            dDiff = 540 - dDiff
+                        End If
+                        'Debug.Print(dAngleDepart.ToString + "-" + dAngle.ToString + "=" + dDiff.ToString + ">" + dDiff.ToString)
+
+                        'Créer une partie de ligne fractionnée vide
+                        pPath = New Path
+                        pPath.SpatialReference = pPolyline.SpatialReference
+
+                        'Interface pour ajouter un segment
+                        pSegCollAdd = CType(pPath, ISegmentCollection)
+                        'Ajouter un segment
+                        pSegCollAdd.AddSegment(pSegColl.Segment(j - 1))
+
+                        'Si l'angle de départ est initialisée
+                    Else
+                        'Initialiser l'angle selon l'angle de départ
+                        dAngle = clsGeneraliserGeometrie.Angle(pSegColl.Segment(j).FromPoint, pSegColl.Segment(j).ToPoint)
+
+                        'Définir la différence d'angle
+                        dDiff = dAngleDepart - dAngle
+                        'Définir l'angle entre les deux droites consécutives
+                        If dDiff > -180 And dDiff < 180 Then
+                            dDiff = 180 - dDiff
+                        ElseIf dDiff < -180 Then
+                            dDiff = Math.Abs(180 + dDiff)
+                        ElseIf dDiff > 180 Then
+                            dDiff = 540 - dDiff
+                        End If
+                        'Debug.Print(dAngleDepart.ToString + "-" + dAngle.ToString + "=" + dDiff.ToString + ">" + dDiff.ToString)
+
+                        'Vérifier si l'état (aigu ou obtu) de la différence d'angle est différent
+                        If (dDiff < 180 And dDiffDepart > 180) Or (dDiff > 180 And dDiffDepart < 180) Then
+                            'Définir le demi segment vide
+                            pDemiSegment = New Line
+                            pDemiSegment.SpatialReference = pPolyline.SpatialReference
+                            'Définir le point vide
+                            pPoint = New Point
+                            pPoint.SpatialReference = pPolyline.SpatialReference
+                            'Calculer la position du centre du segment
+                            pPoint.X = (pSegColl.Segment(j - 1).FromPoint.X + pSegColl.Segment(j - 1).ToPoint.X) / 2
+                            pPoint.Y = (pSegColl.Segment(j - 1).FromPoint.Y + pSegColl.Segment(j - 1).ToPoint.Y) / 2
+                            'Définir le premier point
+                            pDemiSegment.FromPoint = pSegColl.Segment(j - 1).FromPoint
+                            'Définir le deuxième point
+                            pDemiSegment.ToPoint = pPoint
+                            'Ajouter un demi segment
+                            pSegCollAdd.AddSegment(pDemiSegment)
+                            'Changer l'orientation si l'angle est obtu
+                            If dDiffDepart > 180 Then pPath.ReverseOrientation()
+                            'Ajouter une ligne fractionnée
+                            pGeomCollAdd.AddGeometry(pPath)
+
+                            'Créer une partie de ligne fractionnée vide
+                            pPath = New Path
+                            pPath.SpatialReference = pPolyline.SpatialReference
+                            'Définir le demi segment vide
+                            pDemiSegment = New Line
+                            pDemiSegment.SpatialReference = pPolyline.SpatialReference
+                            'Définir le point vide
+                            pPoint = New Point
+                            pPoint.SpatialReference = pPolyline.SpatialReference
+                            'Calculer la position du centre du segment
+                            pPoint.X = (pSegColl.Segment(j - 1).FromPoint.X + pSegColl.Segment(j - 1).ToPoint.X) / 2
+                            pPoint.Y = (pSegColl.Segment(j - 1).FromPoint.Y + pSegColl.Segment(j - 1).ToPoint.Y) / 2
+                            'Interface pour ajouter un segment
+                            pSegCollAdd = CType(pPath, ISegmentCollection)
+                            'Définir le premier point
+                            pDemiSegment.FromPoint = pPoint
+                            'Définir le premier point
+                            pDemiSegment.ToPoint = pSegColl.Segment(j - 1).ToPoint
+                            'Ajouter un demi segment
+                            pSegCollAdd.AddSegment(pDemiSegment)
+
+                            'Si l'état (aigu ou obtu) de la différence d'angle est le même
+                        Else
+                            'Ajouter un segment
+                            pSegCollAdd.AddSegment(pSegColl.Segment(j - 1))
+                        End If
+                    End If
+
+                    'Initialiser l'angle de départ
+                    dAngleDepart = dAngle
+                    'Initialiser l'angle de différence de départ
+                    dDiffDepart = dDiff
+                Next
+            Next
+
+            'Ajouter un segment
+            pSegCollAdd.AddSegment(pSegment)
+            'Changer l'orientation si l'angle est obtu
+            If dDiffDepart > 180 Then pPath.ReverseOrientation()
+            'Ajouter une ligne fractionnée
+            pGeomCollAdd.AddGeometry(pPath)
+
+            'Retourner la polyligne fractionnée
+            FractionnerPolyligne = pLigneFractionnee
+
+        Catch ex As Exception
+            Throw
+        Finally
+            'Vider la mémoire
+            pLigneFractionnee = Nothing
+            pPath = Nothing
+            pGeomColl = Nothing
+            pGeomCollAdd = Nothing
+            pSegColl = Nothing
+            pSegCollAdd = Nothing
+        End Try
+    End Function
 
     '''<summary>
     ''' Routine qui permet de généraliser un élément de type ligne selon une largeur et une longueur minimum de généralisation et une longueur minimale des lignes. 

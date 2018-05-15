@@ -6,95 +6,33 @@
   <Image>Images\mpoBarreGeneralisation.png</Image>
   <Author>mpothier</Author>
   <Company>MPO</Company>
-  <Date>2017-11-16</Date>
+  <Date>2018-05-15</Date>
   <Targets>
     <Target name="Desktop" version="10.5" />
   </Targets>
   <AddIn language="CLR" library="BarreGeneralisation.dll" namespace="BarreGeneralisation">
     <ArcMap>
       <Commands>
-        <Button id="MPO_BarreGeneralisation_cmdActiverMenu" class="cmdActiverMenu" caption="Activer/désactiver le menu"
-                tip="Activer ou désactiver le menu de généralisation."
-                message="Enable or disable the generalization menu."
-                category="MPO-BarreGeneralisation" image="Images\cmdActiverMenu.png" onDemand="false" />
-        
-        <Button id="MPO_BarreGeneralisation_cmdSimplifier" class="cmdSimplifier" caption="Corriger la topologie des géométries des éléments" 
-                tip="Corriger la topologie des éléments sélectionnés selon une précision. Les composantes vides des géométries des éléments sont éliminées." 
-                message="Correct the topology of the selected elements to a precision. The empty components of the geometries of the elements are eliminated." 
-                category="MPO-BarreGeneralisation" image="Images\cmdSimplifier.png" onDemand="false" />
-        
-        <Button id="MPO_BarreGeneralisation_cmdCorrigerProximite" class="cmdCorrigerProximite" caption="Corriger la proximite entre les éléments en relation" 
-                tip="Corriger la proximité des éléments sélectionnés selon la tolérance de précision spécifiée et les éléments en relation." 
-                message="Correct the proximity of selected elements to the specified precision tolerance and related elements." 
-                category="MPO-BarreGeneralisation" image="Images\cmdCorrigerProximite.png" onDemand="false" />
-        
-        <Button id="MPO_BarreGeneralisation_cmdCorrigerDupplicationLigne" class="cmdCorrigerDupplicationLigne" caption="Corriger la duplication des lignes" 
-                tip="Corriger la dupplication des lignes des éléments sélectionnés. Les lignes duppliquées avec les limites des surfaces en relation seront aussi corrigées." 
-                message="Correct the application of the lines of the selected elements. The lines applied with the boundaries of the related surfaces will also be corrected."
-                category="MPO-BarreGeneralisation" image="Images\cmdCorrigerDupplicationLigne.png" onDemand="false" />
-        
-        <Button id="MPO_BarreGeneralisation_cmdCorrigerSegmentationManquante" class="cmdCorrigerSegmentationManquante" caption="Corriger la segmentation manquante" 
-                tip="Corriger la segmentation manquante des éléments sélectionnés selon les éléments en relation et la liste des attributs spécifiés." 
-                message="Correct the missing segmentation of the selected elements according to the related elements and the list of specified attributes." 
-                category="MPO-BarreGeneralisation" image="Images\cmdCorrigerSegmentationManquante.png" onDemand="false" />
-        
-        <Button id="MPO_BarreGeneralisation_cmdCorrigerSegmentationEnTrop" class="cmdCorrigerSegmentationEnTrop" caption="Corriger la segmentation en trop" 
-                tip="Corriger la segmentation en trop des éléments sélectionnés selon les éléments en relation." 
-                message="Correct the segmentation in excess of the selected elements according to the elements in relation." 
-                category="MPO-BarreGeneralisation" image="Images\cmdCorrigerSegmentationEnTrop.png" onDemand="false" />
-        
-        <Button id="MPO_BarreGeneralisation_cmdCorrigerFiltrage" class="cmdCorrigerFiltrage" caption="Corriger le filtrage des sommets en trop" 
-                tip="Corriger le filtrage des sommets en trop des éléments sélectionnés selon une distance latérale (Douglas-Peuker) en conservant la connexion entre les éléments en relation." 
-                message="Correct the filtering of the vertices in excess of the elements selected according to a lateral distance (Douglas-Peuker) while preserving the connection between the elements in relation." 
-                category="MPO-BarreGeneralisation" image="Images\cmdCorrigerFiltrage.png" onDemand="false" />
-        
-        <Button id="MPO_BarreGeneralisation_cmdCorrigerLongueurDroite" class="cmdCorrigerLongueurDroite" caption="Corriger la longueur des droites" 
-                tip="Corriger la longueur des droites des éléments sélectionnés selon une longueur minimale en conservant la connexion entre les éléments en relation." 
-                message="Correct the length of the lines of the selected elements by a minimum length while maintaining the connection between the elements in relation." 
-                category="MPO-BarreGeneralisation" image="Images\cmdCorrigerLongueurDroite.png" onDemand="false" />
-        
-        <Button id="MPO_BarreGeneralisation_cmdCorrigerLongueurLigne" class="cmdCorrigerLongueurLigne" caption="Corriger la longueur des lignes" 
-                tip="Corriger la longueur des lignes des éléments sélectionnés selon une longueur minimale en conservant la connexion des éléments en relation. Les lignes dont la longueur est inférieure à la longueur minimale sont éliminées." 
-                message="Correct the length of the lines of the selected elements to a minimum length while keeping the connection of the elements in relation. Lines whose length is less than the minimum length are eliminated." 
-                category="MPO-BarreGeneralisation" image="Images\cmdCorrigerLongueurLigne.png" onDemand="false" />
-        
-        <Button id="MPO_BarreGeneralisation_cmdCorrigerDensiteLigne" class="cmdCorrigerDensiteLigne" caption="Corriger la densite des lignes" 
-                tip="Corriger la densité des lignes fermées des éléments sélectionnés selon une longueur minimale en conservant la connexion des éléments en relation. La ligne la plus longue de la polyligne fermée est détruite." 
-                message="Correct the density of the closed lines of the selected elements by a minimum length while maintaining the connection of the elements in relation. The longest line of the closed polyline is destroyed." 
-                category="MPO-BarreGeneralisation" image="Images\cmdCorrigerDensiteLigne.png" onDemand="false" />
-        
-        <Button id="MPO_BarreGeneralisation_cmdCorrigerSuperficieSurface" class="cmdCorrigerSuperficieSurface" caption="Corriger la superficie des surfaces" 
-                tip="Corriger la superficie des surfaces pour les éléments sélectionnés selon une superficie minimale. Les anneaux des surfaces dont la superficie est inférieure à la superficie minimale sont éliminés." 
-                message="Correct surface area for selected elements with minimum area. Rings of surfaces less than the minimum area are eliminated." 
-                category="MPO-BarreGeneralisation" image="Images\cmdCorrigerSuperficieSurface.png" onDemand="false" />
-        
-        <Button id="MPO_BarreGeneralisation_cmdAdoucir" class="cmdAdoucir" caption="Adoucir les lignes et les limites des surfaces" 
-                tip="Adoucir les lignes et les limites des polygones des éléments sélectionnés selon une distance minimum." 
-                message="Soften lines and polygon boundaries of selected elements by a minimum distance." 
-                category="MPO-BarreGeneralisation" image="Images\cmdAdoucir.png" onDemand="false" />
-        
-        <Button id="MPO_BarreGeneralisation_cmdCorrigerGeneralisationLigne" class="cmdCorrigerGeneralisationLigne" caption="Corriger la généralisation de type ligne" 
-                tip="Corriger la généralisation GAUCHE/DROITE des éléments sélectionnés de type LIGNE selon une largeur et une longueur de généralisation." 
-                message="Correct the LEFT/RIGHT generalization of the selected elements of the LINE type according to a width and a length of generalization." 
-                category="MPO-BarreGeneralisation" image="Images\cmdCorrigerGeneralisationLigne.png" onDemand="false" />
-        
-        <Button id="MPO_BarreGeneralisation_cmdCorrigerGeneralisationInterieure" class="cmdCorrigerGeneralisationInterieure" caption="Corriger la généralisation intérieure de type surface" 
-                tip="Corriger la généralisation INTÉRIEURE des éléments sélectionnés de type SURFACE selon une largeur et une longueur de généralisation." 
-                message="Correct the INTERIOR generalization of the selected elements of the SURFACE type according to a width and a length of generalization." 
-                category="MPO-BarreGeneralisation" image="Images\cmdCorrigerGeneralisationInterieure.png" onDemand="false" />
-        
-        <Button id="MPO_BarreGeneralisation_cmdCorrigerGeneralisationExterieure" class="cmdCorrigerGeneralisationExterieure" caption="Corriger la généralisation extérieure de type surface" 
-                tip="Corriger la généralisation EXTÉRIEURE des éléments sélectionnés de type SURFACE selon une largeur et une longueur de généralisation." 
-                message="Correct the EXTERIOR generalization of the selected elements of the SURFACE type according to a width and a length of generalization." 
-                category="MPO-BarreGeneralisation" image="Images\cmdCorrigerGeneralisationExterieure.png" onDemand="false" />
-        
-        <Button id="MPO_BarreGeneralisation_cmdCreerSquelette" class="cmdCreerSquelette" caption="Créer les squelettes des surfaces" 
-                tip="Créer les squelettes des éléments sélectionnés de type SURFACE selon la méthode de Delaunay ou de Voronoi." 
-                message="Create the skeletons of the selected elements of the SURFACE type according to the Delaunay or Voronoi method." 
-                category="MPO-BarreGeneralisation" image="Images\cmdCreerSquelette.png" onDemand="false" />
+        <Button id="MPO_BarreGeneralisation_cmdActiverMenu" class="cmdActiverMenu" caption="Activer/désactiver le menu" tip="Activer ou désactiver le menu de généralisation." message="Enable or disable the generalization menu." category="MPO-BarreGeneralisation" image="Images\cmdActiverMenu.png" onDemand="false" />
+        <Button id="MPO_BarreGeneralisation_cmdSimplifier" class="cmdSimplifier" caption="Corriger la topologie des géométries des éléments" tip="Corriger la topologie des éléments sélectionnés selon une précision. Les composantes vides des géométries des éléments sont éliminées." message="Correct the topology of the selected elements to a precision. The empty components of the geometries of the elements are eliminated." category="MPO-BarreGeneralisation" image="Images\cmdSimplifier.png" onDemand="false" />
+        <Button id="MPO_BarreGeneralisation_cmdCorrigerProximite" class="cmdCorrigerProximite" caption="Corriger la proximite entre les éléments en relation" tip="Corriger la proximité des éléments sélectionnés selon la tolérance de précision spécifiée et les éléments en relation." message="Correct the proximity of selected elements to the specified precision tolerance and related elements." category="MPO-BarreGeneralisation" image="Images\cmdCorrigerProximite.png" onDemand="false" />
+        <Button id="MPO_BarreGeneralisation_cmdCorrigerDupplicationLigne" class="cmdCorrigerDupplicationLigne" caption="Corriger la duplication des lignes" tip="Corriger la dupplication des lignes des éléments sélectionnés. Les lignes duppliquées avec les limites des surfaces en relation seront aussi corrigées." message="Correct the application of the lines of the selected elements. The lines applied with the boundaries of the related surfaces will also be corrected." category="MPO-BarreGeneralisation" image="Images\cmdCorrigerDupplicationLigne.png" onDemand="false" />
+        <Button id="MPO_BarreGeneralisation_cmdCorrigerSegmentationManquante" class="cmdCorrigerSegmentationManquante" caption="Corriger la segmentation manquante" tip="Corriger la segmentation manquante des éléments sélectionnés selon les éléments en relation et la liste des attributs spécifiés." message="Correct the missing segmentation of the selected elements according to the related elements and the list of specified attributes." category="MPO-BarreGeneralisation" image="Images\cmdCorrigerSegmentationManquante.png" onDemand="false" />
+        <Button id="MPO_BarreGeneralisation_cmdCorrigerSegmentationEnTrop" class="cmdCorrigerSegmentationEnTrop" caption="Corriger la segmentation en trop" tip="Corriger la segmentation en trop des éléments sélectionnés selon les éléments en relation." message="Correct the segmentation in excess of the selected elements according to the elements in relation." category="MPO-BarreGeneralisation" image="Images\cmdCorrigerSegmentationEnTrop.png" onDemand="false" />
+        <Button id="MPO_BarreGeneralisation_cmdCorrigerFiltrage" class="cmdCorrigerFiltrage" caption="Corriger le filtrage des sommets en trop" tip="Corriger le filtrage des sommets en trop des éléments sélectionnés selon une distance latérale (Douglas-Peuker) en conservant la connexion entre les éléments en relation." message="Correct the filtering of the vertices in excess of the elements selected according to a lateral distance (Douglas-Peuker) while preserving the connection between the elements in relation." category="MPO-BarreGeneralisation" image="Images\cmdCorrigerFiltrage.png" onDemand="false" />
+        <Button id="MPO_BarreGeneralisation_cmdCorrigerLongueurDroite" class="cmdCorrigerLongueurDroite" caption="Corriger la longueur des droites" tip="Corriger la longueur des droites des éléments sélectionnés selon une longueur minimale en conservant la connexion entre les éléments en relation." message="Correct the length of the lines of the selected elements by a minimum length while maintaining the connection between the elements in relation." category="MPO-BarreGeneralisation" image="Images\cmdCorrigerLongueurDroite.png" onDemand="false" />
+        <Button id="MPO_BarreGeneralisation_cmdCorrigerLongueurLigne" class="cmdCorrigerLongueurLigne" caption="Corriger la longueur des lignes" tip="Corriger la longueur des lignes des éléments sélectionnés selon une longueur minimale en conservant la connexion des éléments en relation. Les lignes dont la longueur est inférieure à la longueur minimale sont éliminées." message="Correct the length of the lines of the selected elements to a minimum length while keeping the connection of the elements in relation. Lines whose length is less than the minimum length are eliminated." category="MPO-BarreGeneralisation" image="Images\cmdCorrigerLongueurLigne.png" onDemand="false" />
+        <Button id="MPO_BarreGeneralisation_cmdCorrigerDensiteLigne" class="cmdCorrigerDensiteLigne" caption="Corriger la densite des lignes" tip="Corriger la densité des lignes fermées des éléments sélectionnés selon une longueur minimale en conservant la connexion des éléments en relation. La ligne la plus longue de la polyligne fermée est détruite." message="Correct the density of the closed lines of the selected elements by a minimum length while maintaining the connection of the elements in relation. The longest line of the closed polyline is destroyed." category="MPO-BarreGeneralisation" image="Images\cmdCorrigerDensiteLigne.png" onDemand="false" />
+        <Button id="MPO_BarreGeneralisation_cmdCorrigerSuperficieSurface" class="cmdCorrigerSuperficieSurface" caption="Corriger la superficie des surfaces" tip="Corriger la superficie des surfaces pour les éléments sélectionnés selon une superficie minimale. Les anneaux des surfaces dont la superficie est inférieure à la superficie minimale sont éliminés." message="Correct surface area for selected elements with minimum area. Rings of surfaces less than the minimum area are eliminated." category="MPO-BarreGeneralisation" image="Images\cmdCorrigerSuperficieSurface.png" onDemand="false" />
+        <Button id="MPO_BarreGeneralisation_cmdAdoucir" class="cmdAdoucir" caption="Adoucir les lignes et les limites des surfaces" tip="Adoucir les lignes et les limites des polygones des éléments sélectionnés selon une distance minimum." message="Soften lines and polygon boundaries of selected elements by a minimum distance." category="MPO-BarreGeneralisation" image="Images\cmdAdoucir.png" onDemand="false" />
+        <Button id="MPO_BarreGeneralisation_cmdCorrigerGeneralisationLigneFractionnee" class="cmdCorrigerGeneralisationLigneFractionnee" message="Correct the LEFT/RIGHT generalization of the selected elements of the fractionated LINE type according to a width and a length of generalization." caption="Corriger la généralisation de type ligne fractionnée" tip="Corriger la généralisation GAUCHE/DROITE des éléments sélectionnés de type LIGNE fractionnée selon une largeur et une longueur de généralisation." category="MPO-BarreGeneralisation" image="Images\cmdCorrigerGeneralisationLigneFractionnee.png" onDemand="false" />
+        <Button id="MPO_BarreGeneralisation_cmdCorrigerGeneralisationLigne" class="cmdCorrigerGeneralisationLigne" message="Correct the LEFT/RIGHT generalization of the selected elements of the LINE type according to a width and a length of generalization." caption="Corriger la généralisation de type ligne" tip="Corriger la généralisation GAUCHE/DROITE des éléments sélectionnés de type LIGNE selon une largeur et une longueur de généralisation." category="MPO-BarreGeneralisation" image="Images\cmdCorrigerGeneralisationLigne.png" onDemand="false" />
+        <Button id="MPO_BarreGeneralisation_cmdCorrigerGeneralisationInterieure" class="cmdCorrigerGeneralisationInterieure" caption="Corriger la généralisation intérieure de type surface" tip="Corriger la généralisation INTÉRIEURE des éléments sélectionnés de type SURFACE selon une largeur et une longueur de généralisation." message="Correct the INTERIOR generalization of the selected elements of the SURFACE type according to a width and a length of generalization." category="MPO-BarreGeneralisation" image="Images\cmdCorrigerGeneralisationInterieure.png" onDemand="false" />
+        <Button id="MPO_BarreGeneralisation_cmdCorrigerGeneralisationExterieure" class="cmdCorrigerGeneralisationExterieure" caption="Corriger la généralisation extérieure de type surface" tip="Corriger la généralisation EXTÉRIEURE des éléments sélectionnés de type SURFACE selon une largeur et une longueur de généralisation." message="Correct the EXTERIOR generalization of the selected elements of the SURFACE type according to a width and a length of generalization." category="MPO-BarreGeneralisation" image="Images\cmdCorrigerGeneralisationExterieure.png" onDemand="false" />
+        <Button id="MPO_BarreGeneralisation_cmdCreerSquelette" class="cmdCreerSquelette" caption="Créer les squelettes des surfaces" tip="Créer les squelettes des éléments sélectionnés de type SURFACE selon la méthode de Delaunay ou de Voronoi." message="Create the skeletons of the selected elements of the SURFACE type according to the Delaunay or Voronoi method." category="MPO-BarreGeneralisation" image="Images\cmdCreerSquelette.png" onDemand="false" />
       </Commands>
       <Toolbars>
-        <Toolbar id="BarreGeneralisation_BarreGeneralisation" caption="MPO-BarreGeneralisation (14 Mai 2018)" showInitially="false">
+        <Toolbar id="BarreGeneralisation_BarreGeneralisation" caption="MPO-BarreGeneralisation (15 Mai 2018)" showInitially="false">
           <Items>
             <Button refID="MPO_BarreGeneralisation_cmdActiverMenu" />
             <Button refID="MPO_BarreGeneralisation_cmdSimplifier" separator="true" />
@@ -108,7 +46,8 @@
             <Button refID="MPO_BarreGeneralisation_cmdCorrigerDensiteLigne" />
             <Button refID="MPO_BarreGeneralisation_cmdCorrigerSuperficieSurface" />
             <Button refID="MPO_BarreGeneralisation_cmdAdoucir" />
-            <Button refID="MPO_BarreGeneralisation_cmdCorrigerGeneralisationLigne" separator="true" />
+            <Button refID="MPO_BarreGeneralisation_cmdCorrigerGeneralisationLigneFractionnee" separator="true" />
+            <Button refID="MPO_BarreGeneralisation_cmdCorrigerGeneralisationLigne" />
             <Button refID="MPO_BarreGeneralisation_cmdCorrigerGeneralisationInterieure" />
             <Button refID="MPO_BarreGeneralisation_cmdCorrigerGeneralisationExterieure" />
             <Button refID="MPO_BarreGeneralisation_cmdCreerSquelette" />

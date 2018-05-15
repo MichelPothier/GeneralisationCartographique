@@ -129,6 +129,7 @@
     <Import Include="System.Diagnostics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="cmdCorrigerGeneralisationLigneFractionnee.vb" />
     <Compile Include="cmdAdoucir.vb" />
     <Compile Include="cmdCorrigerSuperficieSurface.vb" />
     <Compile Include="cmdCorrigerDensiteLigne.vb" />
@@ -285,6 +286,9 @@
   </ItemGroup>
   <ItemGroup>
     <AddInContent Include="Images\cmdAdoucir.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AddInContent Include="Images\cmdCorrigerGeneralisationLigneFractionnee.png" />
   </ItemGroup>
   <PropertyGroup>
     <ZipFileExtension>esriAddIn</ZipFileExtension>

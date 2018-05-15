@@ -581,13 +581,14 @@ Public Class clsGeneraliserGeometrie
         Try
             'Traiter tant qu'il y a une correction
             Do While bTraiter
-                'Extraire les limites de la polyligne
-                pLimite = IdentifierLimiteSquelette(pPolyline)
-
                 'Interface pour extraire les extrémités des lignes
                 pTopoOp = CType(pPolyline, ITopologicalOperator2)
                 pTopoOp.IsKnownSimple_2 = False
                 pTopoOp.Simplify()
+
+                'Extraire les limites de la polyligne
+                pLimite = IdentifierLimiteSquelette(pPolyline)
+
                 'Extraire les extrémités des lignes
                 pTopoOp = CType(pTopoOp.Boundary, ITopologicalOperator2)
                 pTopoOp.IsKnownSimple_2 = False
@@ -630,11 +631,6 @@ Public Class clsGeneraliserGeometrie
                         End If
                     End If
                 Next
-
-                'Corriger la topologie
-                pTopoOp = CType(pPolyline, ITopologicalOperator2)
-                pTopoOp.IsKnownSimple_2 = False
-                pTopoOp.Simplify()
             Loop
 
         Catch ex As Exception

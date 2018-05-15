@@ -1350,6 +1350,20 @@ Date : 3 mai 2011
 	<param name="pPath">Interface contenant une ligne.</param>
 	<param name="dDistMin">Contient la distance minimum entre 2 sommets d'une ligne.</param>
 	<returns>IPath contenant la nouvelle ligne traitée.</returns>
+</member><member name="M:BarreGeneralisation.modGeneralisation.CorrigerGeneralisationLignesFractionnees(System.Double,System.Double,System.Double,System.Double,System.Double,ESRI.ArcGIS.Carto.IFeatureLayer,System.Boolean,System.Boolean,System.Int32@,ESRI.ArcGIS.esriSystem.ITrackCancel@)">
+	<summary>
+ Routine qui permet de corriger la généralisation des éléments de type ligne sélectionnés fractionnées. 
+</summary>
+	<param name="dPrecision"> Contient la précision des données utilisée pour la topologie des éléments.</param>
+	<param name="dDistLat"> Contient la distance latérale minimale utilisée pour généraliser les géométries des éléments.</param>
+	<param name="dLargGenMin"> Contient la largeur de généralisation minimale utilisée pour généraliser les géométries des éléments.</param>
+	<param name="dLongGenMin"> Contient la longueur de généralisation minimale utilisée pour généraliser les géométries des éléments.</param>
+	<param name="dLongMin"> Contient la longueur minimale des lignes.</param>
+	<param name="pFeatureLayerGeneraliser"> Contient le FeatureLayer dans lequel les éléments généralisés seront créés.</param>
+	<param name="bCorriger"> Permet d'indiquer si on doit corriger les lignes en trop des géométries des éléments.</param>
+	<param name="bCreerFichierErreurs"> Permet d'indiquer si on doit créer le fichier d'erreurs.</param>
+	<param name="iNbErreurs"> Contient le nombre d'erreurs.</param>
+	<param name="pTrackCancel"> Contient la barre de progression.</param>
 </member><member name="M:BarreGeneralisation.modGeneralisation.CorrigerGeneralisationLignes(System.Double,System.Double,System.Double,System.Double,System.Double,ESRI.ArcGIS.Carto.IFeatureLayer,System.Boolean,System.Boolean,System.Int32@,ESRI.ArcGIS.esriSystem.ITrackCancel@)">
 	<summary>
  Routine qui permet de corriger la généralisation gauche/droite des éléments de type ligne sélectionnés. 
@@ -1364,6 +1378,27 @@ Date : 3 mai 2011
 	<param name="bCreerFichierErreurs"> Permet d'indiquer si on doit créer le fichier d'erreurs.</param>
 	<param name="iNbErreurs"> Contient le nombre d'erreurs.</param>
 	<param name="pTrackCancel"> Contient la barre de progression.</param>
+</member><member name="M:BarreGeneralisation.modGeneralisation.GeneraliserLigneFractionneeElement(System.Double,System.Double,System.Double,System.Double,System.Double,ESRI.ArcGIS.Carto.IFeatureLayer,System.Boolean,ESRI.ArcGIS.Geodatabase.ITopologyGraph,ESRI.ArcGIS.Geodatabase.IFeature@,ESRI.ArcGIS.Geometry.IGeometryBag@)">
+	<summary>
+ Routine qui permet de généraliser un élément de type ligne fractionnée et selon une largeur et une longueur minimum de généralisation et une longueur minimale des lignes. 
+</summary>
+	<param name="dPrecision"> Contient la précision des données utilisée pour la topologie des éléments.</param>
+	<param name="dDistLat"> Contient la distance latérale minimale utilisée pour généraliser les géométries des éléments.</param>
+	<param name="dLargGenMin"> Contient la largeur de généralisation minimale utilisée pour généraliser les géométries des éléments.</param>
+	<param name="dLongGenMin"> Contient la longueur de généralisation minimale utilisée pour généraliser les géométries des éléments.</param>
+	<param name="dLongMin"> Contient la longueur minimale des lignes.</param>
+	<param name="pFeatureLayerGeneraliser"> Contient le FeatureLayer dans lequel les éléments généralisés seront créés.</param>
+	<param name="bCorriger"> Permet d'indiquer si on doit corriger les lignes en trop des géométries des éléments.</param>
+	<param name="pTopologyGraph"> Interface contenant la topologie des éléments à généraliser.</param>
+	<param name="pFeature"> Interface contenant l'élément à généraliser.</param>
+	<param name="pBagErreurs"> Contient les géométries d'erreurs.</param>
+</member><member name="M:BarreGeneralisation.modGeneralisation.FractionnerPolyligne(ESRI.ArcGIS.Geometry.IPolyline)">
+	<summary>
+ Fonction qui permet de fractionner une polyligne selon les angles aigus et obtus.
+ La polyligne résultante contiendra des lignes (Path) de sens inversé entre les changement d'angle aigu et obtu des droites consécutives.
+</summary>
+	<param name="pPolyline"> Interface contenant la polyligne à fractionner.</param>
+	<returns>IPolyline contenant la polyligne fractionnée.</returns>
 </member><member name="M:BarreGeneralisation.modGeneralisation.GeneraliserLigneElement(System.Double,System.Double,System.Double,System.Double,System.Double,ESRI.ArcGIS.Carto.IFeatureLayer,System.Boolean,ESRI.ArcGIS.Geodatabase.ITopologyGraph,ESRI.ArcGIS.Geodatabase.IFeature@,ESRI.ArcGIS.Geometry.IGeometryBag@)">
 	<summary>
  Routine qui permet de généraliser un élément de type ligne selon une largeur et une longueur minimum de généralisation et une longueur minimale des lignes. 
@@ -1569,6 +1604,10 @@ Returns 'MPO_BarreGeneralisation_cmdCorrigerSuperficieSurface', the id declared 
 	<summary>
 Returns 'MPO_BarreGeneralisation_cmdAdoucir', the id declared for Add-in Button class 'cmdAdoucir'
 </summary>
+</member><member name="P:BarreGeneralisation.My.ThisAddIn.IDs.cmdCorrigerGeneralisationLigneFractionnee">
+	<summary>
+Returns 'MPO_BarreGeneralisation_cmdCorrigerGeneralisationLigneFractionnee', the id declared for Add-in Button class 'cmdCorrigerGeneralisationLigneFractionnee'
+</summary>
 </member><member name="P:BarreGeneralisation.My.ThisAddIn.IDs.cmdCorrigerGeneralisationLigne">
 	<summary>
 Returns 'MPO_BarreGeneralisation_cmdCorrigerGeneralisationLigne', the id declared for Add-in Button class 'cmdCorrigerGeneralisationLigne'
@@ -1668,6 +1707,17 @@ Menu qui permet d'afficher les paramètres et les valeurs des dimensions minimal
 </summary>
 	<remarks>
 Auteur : Michel Pothier
+</remarks>
+</member><member name="T:BarreGeneralisation.cmdCorrigerGeneralisationLigneFractionnee">
+	<summary>
+ Commande qui permet de corriger la généralisation des éléments de type ligne sélectionnés fractionnées et selon une largeur, une longueur minimale
+ à l'aide des outils de topologie tout en respectant les éléments en relation.
+</summary>
+	<remarks>
+Ce traitement est utilisable en mode interactif à l'aide de ses interfaces graphiques et doit être utilisé dans ArcMap (ArcGisESRI).
+
+Auteur : Michel Pothier
+Date : 15 mai 2018
 </remarks>
 </member><member name="T:BarreGeneralisation.cmdAdoucir">
 	<summary>
